@@ -2,34 +2,27 @@ package main
 
 import (
 	"fmt"
+	//tea "github.com/charmbracelet/bubbletea"
+	"log"
+	"net/http"
 	"os"
+	"strings"
 )
 
-func manual() {
-	fmt.Println("\n      Welcome to Capyfilter\n" +
-		"----parameters - explanation----\n" +
-		"a -  sort directory by alphabetical order" +
-		"")
-	return
-}
-
-func filterAlphabetical(filesDir []os.DirEntry) {
-	fmt.Println("Filtering by alphabetical order...")
-}
-
-func mapArgs(args []string) map[string]bool {
-	set := make(map[string]bool)
-	for _, arg := range args {
-		set[arg] = true
-	}
-	return set
-}
-
 func main() {
-	var argSet map[string]bool
+	method := os.Args[1]
+	if method == "get" {
+		url := os.Args[2]
 
-	argSet = mapArgs(os.Args[1:])
-	if argSet["-h"] || argSet["--help"] {
-		manual()
+		if !strings.HasPrefix(url, "http") {
+			url = "http://" + url
+		}
+		res, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer res.Body.Close()
+		fmt.Println(res.Status)
 	}
 }
